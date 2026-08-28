@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: eda
+      POSTGRES_PASSWORD: eda
+      POSTGRES_DB: eda
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  ollama:
+    image: ollama/ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+volumes:
+  postgres_data:
+  ollama_data:
