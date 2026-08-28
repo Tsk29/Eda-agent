@@ -15,6 +15,7 @@ class ColumnProfile(BaseModel):
 
 
 class TableProfile(BaseModel):
+    table_name: str
     row_count: int
     columns: list[ColumnProfile]
     candidate_primary_keys: list[str]

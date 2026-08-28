@@ -181,6 +181,7 @@ def profile_table(con: duckdb.DuckDBPyConnection, table: str) -> TableProfile:
             candidate_primary_keys.append(column_name)
 
     return TableProfile(
+        table_name=table,
         row_count=row_count,
         columns=columns,
         candidate_primary_keys=candidate_primary_keys,

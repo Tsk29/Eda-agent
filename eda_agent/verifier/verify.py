@@ -79,7 +79,19 @@ def verify_claim(claim: Claim, run_sql: Callable[[str], list[dict]]) -> Verified
                 "verify_claim: key %r missing from result row for sql=%r", key, claim.sql
             )
             return _reject(claim, recomputed_values)
-        recomputed_values[key] = float(row[key])
+        value = row[key]
+        try:
+            recomputed_values[key] = float(value)
+        except (TypeError, ValueError):
+            # SQL legitimately returned NULL (e.g. AVG over zero matching
+            # rows) or a non-numeric value -- unverifiable, not a crash.
+            logger.warning(
+                "verify_claim: value for key %r is not numeric (%r) for sql=%r",
+                key,
+                value,
+                claim.sql,
+            )
+            return _reject(claim, recomputed_values)
 
     passed = True
     max_relative_error = 0.0

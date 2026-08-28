@@ -18,8 +18,14 @@ _SYSTEM_PROMPT = (
     "that computes the value(s) you are citing, and the numeric value(s) "
     "your SQL is expected to produce. Every number in your prose text must "
     "appear as a value in `stated_values` and be reproducible by `sql`. "
-    "Do not state a number that your SQL does not compute. Respond with a "
-    "batch of claims matching the requested schema."
+    "Do not state a number that your SQL does not compute. Every SQL query "
+    "must query the exact table name given to you below -- never invent a "
+    "placeholder table name. Your SQL's SELECT list must alias every output "
+    "column (e.g. `SELECT COUNT(*) AS row_count`), and each key in "
+    "`stated_values` must exactly match one of those column aliases -- "
+    "never use the numeric value itself, or a description of the value, as "
+    "a `stated_values` key. Respond with a batch of claims matching the "
+    "requested schema."
 )
 
 
@@ -48,6 +54,7 @@ def build_prompt(profile: TableProfile) -> tuple[str, str]:
     Never includes raw row data.
     """
     lines = [
+        f"table_name: {profile.table_name}",
         f"row_count: {profile.row_count}",
         f"candidate_primary_keys: {profile.candidate_primary_keys}",
         "columns:",

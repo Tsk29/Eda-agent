@@ -13,7 +13,14 @@ Run with:
 from __future__ import annotations
 
 import os
+import sys
+from pathlib import Path
 from typing import Any
+
+# `streamlit run app/main.py` puts this file's own directory on sys.path[0],
+# not the repo root, so `app` and `eda_agent` aren't importable as packages
+# without this. Must run before the local/project imports below.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import pandas as pd
 import streamlit as st
@@ -48,7 +55,7 @@ def _render_findings_section(engine: Any, run_id: int) -> None:
         }
         for f in ordered
     ]
-    st.dataframe(pd.DataFrame(table_rows), use_container_width=True, hide_index=True)
+    st.dataframe(pd.DataFrame(table_rows), width="stretch", hide_index=True)
 
 
 def _render_claim(claim: dict[str, Any]) -> None:
@@ -72,7 +79,7 @@ def _render_claim(claim: dict[str, Any]) -> None:
 
     col1, col2 = st.columns([2, 1])
     with col1:
-        st.dataframe(comparison, use_container_width=True)
+        st.dataframe(comparison, width="stretch")
     with col2:
         st.metric("Max relative error", f"{claim['max_relative_error']:.2e}")
 

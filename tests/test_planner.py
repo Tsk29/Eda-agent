@@ -11,6 +11,7 @@ from eda_agent.schemas import Claim, VerifiedClaim
 
 def make_profile() -> TableProfile:
     return TableProfile(
+        table_name="events",
         row_count=100,
         candidate_primary_keys=["id"],
         columns=[

@@ -24,6 +24,20 @@ def test_exact_match_passes() -> None:
     assert result.claim.stated_values == {"mean": 3.0}
 
 
+def test_null_recomputed_value_rejected_not_raised() -> None:
+    # A legitimate SQL result (e.g. AVG() over zero matching rows) can be
+    # NULL. That must reject the claim as unverifiable, never crash.
+    claim = make_claim("SELECT AVG(x) AS mean FROM t WHERE 1=0", {"mean": 3.0})
+
+    def run_sql(_sql: str) -> list[dict]:
+        return [{"mean": None}]
+
+    result = verify_claim(claim, run_sql)
+
+    assert result.passed is False
+    assert result.recomputed_values == {}
+
+
 def test_float_within_tolerance_passes() -> None:
     stated = 1000.5
     # relative error ~5e-7, well under 1e-6 tolerance
